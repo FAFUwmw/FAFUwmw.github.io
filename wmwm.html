@@ -16,7 +16,7 @@
         header {
             background-color: #333;
             color: white;
-            padding: 10px;
+            padding: 5px; /* 减少上下内边距 */
             text-align: center;
         }
         #map-container {
@@ -26,15 +26,20 @@
         #map {
             flex: 1;
             height: 100%;
-            position: relative; /* 用于绝对定位微件 */
+            position: relative;
         }
         #baseGallery-container {
             width: 200px;
             background-color: #f4f4f4;
             border-left: 1px solid #ddd;
-            padding: 10px;
+            padding: 5px; /* 减少上下内边距 */
+            display: flex;
+            flex-direction: column;
         }
-        /* 添加微件的样式 */
+        #baseGallery {
+            flex: 1;
+            overflow-y: auto;
+        }
         .esri-widget {
             border: 1px solid #ccc;
             background-color: white;
@@ -69,51 +74,47 @@
             "esri/views/MapView"
         ], (FeatureLayer, BasemapGallery, ScaleBar, Legend, Search, LayerList, Map, MapView) => {
             const map = new Map({
-                basemap: "topo-vector" // 使用任意一个底图
+                basemap: "topo-vector"
             });
 
             const view = new MapView({
-                container: "map", // 引用 HTML 中的视图 div
+                container: "map",
                 map: map,
-                center: [102, 35], // 中国的地理中心点
-                zoom: 3 // 缩放级别调整为3，以显示整个中国
+                center: [102, 35],
+                zoom: 3
             });
 
-            // 添加专题图层
-            const trailheadsLayer = new FeatureLayer({
-                url: "https://www.geosceneonline.cn/server/rest/services/Hosted/各省疫情信息/FeatureServer/0" // 替换为实际的FeatureLayer URL
+            // 修改为有效的FeatureLayer URL
+            const featureLayer = new FeatureLayer({
+                url: "https://www.geosceneonline.cn/server/rest/services/Hosted/各省疫情信息/FeatureServer/0"
             });
-            map.add(trailheadsLayer);
+            map.add(featureLayer);
 
-            // 添加比例尺
-            const scaleBar = new ScaleBar({
+            // 比例尺
+            view.ui.add(new ScaleBar({
                 view: view,
                 unit: "metric"
-            });
-            view.ui.add(scaleBar, "bottom-left");
+            }), "bottom-left");
 
-            // 添加图例
-            const legend = new Legend({
+            // 图例
+            view.ui.add(new Legend({
                 view: view
-            });
-            view.ui.add(legend, "bottom-right");
+            }), "bottom-right");
 
-            // 添加搜索框
-            const search = new Search({
+            // 搜索框
+            view.ui.add(new Search({
                 view: view
-            });
-            view.ui.add(search, "top-right");
+            }), "top-right");
 
-            // 添加图层列表
-            const layerList = new LayerList({
+            // 图层列表
+            view.ui.add(new LayerList({
                 view: view
-            });
-            view.ui.add(layerList, "top-right");
+            }), "top-right");
 
-            // 添加底图库
+            // 底图库
             const basemapGallery = new BasemapGallery({
                 view: view,
-                container: "baseGallery" // 引用 HTML 中的底图库 div
+                container: document.getElementById("baseGallery")
             });
         });
     </script>
